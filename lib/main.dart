@@ -2,13 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-//define application colors
+//application colors
 const Color appBarBackgroundColor = Color(0xFF147CD3);
 const Color bodyBackgroundColor = Color(0xFF2196F3);
 const Color buttonColor = Color(0xFF147CD3);
 const Color textColor = Colors.white;
 
-// define template for all btns
+//templates for all btns
 ButtonStyle _elevatedButtonStyle = ElevatedButton.styleFrom(
   backgroundColor: buttonColor,
   foregroundColor: textColor,
@@ -49,16 +49,36 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _randomNum = 0;
 
+  // count of random generated numbers in the collection
+  final Map<int, int> _listOfNumbers = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0,
+  };
+
+  //generate random number & increment number counts
   void _generateNumber() {
     setState(() {
       _randomNum = Random().nextInt(9) + 1;
+
+      //increments the number count in the map
+      _listOfNumbers[_randomNum] = _listOfNumbers[_randomNum]! + 1;
     });
   }
 
+  //navigate to stat page and pass a collection of number
   void _viewStat() {
     Navigator.push(
       context,
-      MaterialPageRoute<void>(builder: (context) => const StatPage()),
+      MaterialPageRoute<void>(
+        builder: (context) => StatPage(listOfNums: _listOfNumbers),
+      ),
     );
   }
 
@@ -71,11 +91,12 @@ class _HomePageState extends State<HomePage> {
         leading: IconButton(
           icon: Icon(Icons.home, color: textColor),
           onPressed: () {},
-          ),
+        ),
         title: Text(widget.title, style: TextStyle(color: textColor)),
       ),
       body: Column(
         children: [
+          //Displays a randomly generated number or space as a intial state. takes all avaible space
           Expanded(
             child: Center(
               child: _randomNum == 0
@@ -108,16 +129,25 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-//statistic page
+//page that displays a collection of numbers and their count, buttons: reset and back to Home Page
 class StatPage extends StatefulWidget {
-  const StatPage({super.key});
+
+  final Map<int, int> listOfNums;
+  const StatPage({super.key, required this.listOfNums});
 
   @override
   State<StatPage> createState() => _StatPageState();
 }
 
 class _StatPageState extends State<StatPage> {
-  void _reset() {}
+  
+  void _reset() {
+    setState(() {
+      for (var key in widget.listOfNums.keys) {
+        widget.listOfNums[key] = 0;
+      }
+    });
+  }
 
   void _backToHome() {
     Navigator.pop(context);
@@ -132,12 +162,30 @@ class _StatPageState extends State<StatPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: textColor),
           onPressed: _backToHome,
-          ),
+        ),
         title: Text('Statistics', style: TextStyle(color: textColor)),
       ),
       body: Column(
         children: [
-        
+          // display a collection of numbers and their count, takes all avaible space
+          Expanded(
+            child: ListView(
+              children: widget.listOfNums.entries.map((entry) {
+                return ListTile(
+                  title: Text(
+                    'Number ${entry.key}',
+                    style: TextStyle(color: textColor),
+                  ),
+                  trailing: Text(
+                    'Count: ${entry.value}',
+                    style: TextStyle(color: textColor),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+
+          //display button to reset the collection to its initial state
           ElevatedButton(
             style: _elevatedButtonStyle,
             onPressed: _reset,
@@ -146,6 +194,7 @@ class _StatPageState extends State<StatPage> {
 
           const SizedBox(height: 10),
 
+          //display btn to naviagte back home
           ElevatedButton(
             style: _elevatedButtonStyle,
             onPressed: _backToHome,
