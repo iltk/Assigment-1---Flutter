@@ -46,8 +46,27 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   int _randomNum = 0;
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+  }
+
+
+  @override
+  void dispose() {
+    _controller.dispose(); // Clean up
+    super.dispose();
+  }
 
   // count of random generated numbers in the collection
   final Map<int, int> _listOfNumbers = {
@@ -106,19 +125,30 @@ class _HomePageState extends State<HomePage> {
         children: [
           //Displays a randomly generated number or space as a intial state. takes all avaible space
           Expanded(
-            child: Center(
-              child: _randomNum == 0
-                  ? Text("")
-                  : Text(
-                      '$_randomNum',
-                      style: TextStyle(color: textColor, fontSize: 80),
-                    ),
+            child: RotationTransition(
+              turns: Tween(begin: 0.0, end: 1.0).animate(_controller)
+                ..addStatusListener((status) {
+                  if (status == AnimationStatus.completed) {
+                    _controller.reset();
+                  }
+                }),
+              child: Center(
+                child: _randomNum == 0
+                    ? Text("")
+                    : Text(
+                        '$_randomNum',
+                        style: TextStyle(color: textColor, fontSize: 80),
+                      ),
+              ),
             ),
           ),
 
           ElevatedButton(
             style: _elevatedButtonStyle,
-            onPressed: _generateNumber,
+            onPressed: () {
+              _generateNumber();
+              _controller.forward();
+            },
             child: const Text('Generate'),
           ),
 
