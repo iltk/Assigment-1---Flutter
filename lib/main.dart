@@ -46,7 +46,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   int _randomNum = 0;
   late AnimationController _controller;
   late Timer _timer;
@@ -84,8 +85,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   //generate random number & increment number counts
   void _generateNumber() {
-
-    
     if (_controller.isAnimating) {
       return;
     }
@@ -111,7 +110,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     Navigator.push(
       context,
       MaterialPageRoute<void>(
-        builder: (context) => StatPage(listOfNums: _listOfNumbers, reset: _reset),
+        builder: (context) =>
+            StatPage(listOfNums: _listOfNumbers, reset: _reset),
       ),
     );
   }
@@ -135,43 +135,45 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         ),
         title: Text(widget.title, style: TextStyle(color: textColor)),
       ),
-      body: Column(
-        children: [
-          //Displays an animated randomly generated number or space as a intial state. takes all avaible space
-          Expanded(
-            child: RotationTransition(
-              turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
-              child: Center(
-                child: _randomNum == 0
-                    ? Text("")
-                    : Text(
-                        '$_randomNum',
-                        style: TextStyle(color: textColor, fontSize: 80),
-                      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            //Displays an animated randomly generated number or space as a intial state. takes all avaible space
+            Expanded(
+              child: RotationTransition(
+                turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
+                child: Center(
+                  child: _randomNum == 0
+                      ? Text("")
+                      : Text(
+                          '$_randomNum',
+                          style: TextStyle(color: textColor, fontSize: 80),
+                        ),
+                ),
               ),
             ),
-          ),
 
-          //when user clicks the generate button multiple times(before the animation is completed), 
-          //the count updates only once when the animation is completed
-          ElevatedButton(
-            style: _elevatedButtonStyle,
-            onPressed: () {
-              _generateNumber();
-            },
-            child: const Text('Generate'),
-          ),
+            //when user clicks the generate button multiple times(before the animation is completed),
+            //the count updates only once when the animation is completed
+            ElevatedButton(
+              style: _elevatedButtonStyle,
+              onPressed: () {
+                _generateNumber();
+              },
+              child: const Text('Generate'),
+            ),
 
-          const SizedBox(height: 10),
+            const SizedBox(height: 10),
 
-          ElevatedButton(
-            style: _elevatedButtonStyle,
-            onPressed: _viewStat,
-            child: const Text('View Statistics'),
-          ),
+            ElevatedButton(
+              style: _elevatedButtonStyle,
+              onPressed: _viewStat,
+              child: const Text('View Statistics'),
+            ),
 
-          const SizedBox(height: 20),
-        ],
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
@@ -214,44 +216,48 @@ class _StatPageState extends State<StatPage> {
         ),
         title: Text('Statistics', style: TextStyle(color: textColor)),
       ),
-      body: Column(
-        children: [
-          // display a collection of numbers and their count, takes all avaible space
-          Expanded(
-            child: ListView(
-              children: widget.listOfNums.entries.map((entry) {
-                return ListTile(
-                  title: Text(
-                    'Number ${entry.key}',
-                    style: TextStyle(color: textColor),
-                  ),
-                  trailing: Text(
-                    'Count: ${entry.value}',
-                    style: TextStyle(color: textColor),
-                  ),
-                );
-              }).toList(),
+      body: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            // display a collection of numbers and their count, takes all avaible space
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.only(top: 20),
+                children: widget.listOfNums.entries.map((entry) {
+                  return ListTile(
+                    title: Text(
+                      'Number ${entry.key}',
+                      style: TextStyle(color: textColor, fontSize: 17),
+                    ),
+                    trailing: Text(
+                      'Count: ${entry.value}',
+                      style: TextStyle(color: textColor, fontSize: 15),
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
-          ),
 
-          //display button to reset the collection to its initial state
-          ElevatedButton(
-            style: _elevatedButtonStyle,
-            onPressed: _reset,
-            child: const Text('Reset'),
-          ),
+            //display button to reset the collection to its initial state
+            ElevatedButton(
+              style: _elevatedButtonStyle,
+              onPressed: _reset,
+              child: const Text('Reset'),
+            ),
 
-          const SizedBox(height: 10),
+            const SizedBox(height: 10),
 
-          //display btn to naviagte back home
-          ElevatedButton(
-            style: _elevatedButtonStyle,
-            onPressed: _backToHome,
-            child: const Text('Back to Home'),
-          ),
+            //display btn to naviagte back home
+            ElevatedButton(
+              style: _elevatedButtonStyle,
+              onPressed: _backToHome,
+              child: const Text('Back to Home'),
+            ),
 
-          const SizedBox(height: 20),
-        ],
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
